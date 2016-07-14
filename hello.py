@@ -8,16 +8,36 @@ __mtime__ = '2016/7/11'
 """
 from flask import Flask,render_template
 from flask_bootstrap import Bootstrap
-from  flask_moment import Moment
-from datetime import datetime
+from flask_wtf import Form
+from wtforms import StringField,SubmitField
+from wtforms.validators import Required
+#from flask_moment import Moment
+#from datetime import datetime
+
+
+class NameFrom(Form):
+	name = StringField('What is your name?',validators=[Required()])
+	submit = SubmitField('submit')
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'ni cai'
 bootstrap = Bootstrap(app)
-moment = Moment(app)
-
+#moment = Moment(app)
+'''
 @app.route('/')
 def index():
 	return render_template('index.html',current_time=datetime.utcnow())
+'''
+
+
+@app.route('/',methods=['GET','POST'])
+def index():
+	name = None
+	nameForm= NameFrom()
+	if nameForm.validate_on_submit():
+		name = nameForm.name.data
+		nameForm.name.data = ''
+	return  render_template('index.html',form=nameForm,name= name)
 
 
 @app.route('/user/<name>')
